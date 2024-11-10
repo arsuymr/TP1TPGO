@@ -1,9 +1,7 @@
 import tkinter as tk
-from tkinter import messagebox, ttk
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
 
 class ArticulationPointAppDFS:
     def __init__(self, root):
@@ -12,6 +10,7 @@ class ArticulationPointAppDFS:
         self.root.geometry("800x700+200+100")  # Fenêtre plus grande
         self.root.configure(bg="#E2F1E7")  # Beige clair
         self.root.resizable(True, True)
+        
         # Initialiser les données du graphe
         self.graph = nx.Graph()
         self.num_vertices = tk.IntVar()
@@ -35,7 +34,7 @@ class ArticulationPointAppDFS:
         vertices_entry = tk.Entry(frame_vertices, textvariable=self.num_vertices, width=5)
         vertices_entry.pack(side=tk.LEFT, padx=5)
         
-        create_graph_btn = tk.Button(frame_vertices, text="Créer le graphe", command=self.create_graph, fg="white",bg="#629584")
+        create_graph_btn = tk.Button(frame_vertices, text="Créer le graphe", command=self.create_graph, fg="white", bg="#629584")
         create_graph_btn.pack(side=tk.LEFT, padx=5)
         
         # Liste des arêtes
@@ -49,13 +48,17 @@ class ArticulationPointAppDFS:
         tk.Label(frame_edges, text="Ajouter une arête (u, v) :", font=("Arial", 12), bg="#E2F1E7").pack(side=tk.LEFT, padx=5)
         tk.Entry(frame_edges, textvariable=self.u, width=5).pack(side=tk.LEFT, padx=2)
         tk.Entry(frame_edges, textvariable=self.v, width=5).pack(side=tk.LEFT, padx=2)
-        add_edge_btn = tk.Button(frame_edges, text="Ajouter",fg="white", command=self.add_edge, bg="#629584")
+        add_edge_btn = tk.Button(frame_edges, text="Ajouter", fg="white", command=self.add_edge, bg="#629584")
         add_edge_btn.pack(side=tk.LEFT, padx=5)
         
         # Bouton Calculer les points d'articulation
         calculate_btn = tk.Button(self.root, text="Calculer les points d'articulation", command=self.calculate_articulation_points, bg="#243642", fg="white", font=("Arial", 12))
         calculate_btn.pack(pady=10)
-        
+
+        # Ajouter un cadre pour le message temporaire en haut du graphe
+        self.top_message_frame = tk.Frame(self.root, bg="#E2F1E7")
+        self.top_message_frame.pack(pady=5)
+
         # Ajouter le canvas pour afficher le graphe avec un conteneur scrollable
         self.graph_canvas_frame = tk.Frame(self.root, bg="#E2F1E7")
         self.graph_canvas_frame.pack(pady=10, expand=True, fill=tk.BOTH)
@@ -162,18 +165,24 @@ class ArticulationPointAppDFS:
         canvas.get_tk_widget().pack(expand=True, fill=tk.BOTH)
 
     def show_temporary_message(self, message, duration=3000):
-        message_label = tk.Label(self.root, text=message, bg="lightgreen", font=("Arial", 10))
+        # Afficher le message dans le Frame en haut du graphe
+        for widget in self.top_message_frame.winfo_children():
+            widget.destroy()
+        
+        message_label = tk.Label(self.top_message_frame, text=message, bg="lightgreen", font=("Arial", 10))
         message_label.pack(pady=5)
         
         def remove_message():
             message_label.destroy()
         
+        # Supprimer le message après la durée spécifiée
         self.root.after(duration, remove_message)
 
-def run_app():
-    root = tk.Tk()
-    app = ArticulationPointAppDFS(root)
-    root.mainloop()
+# Créer la fenêtre principale
+root = tk.Tk()
 
-# Lancer l'application
-run_app()
+# Créer l'application
+app = ArticulationPointAppDFS(root)
+
+# Lancer la boucle principale
+root.mainloop()
